@@ -1,0 +1,22 @@
+{
+  "name": "silly-snake",
+  "version": "0.0.1",
+  "description": "A silly snake that learns deeply.",
+  "repository": "https://github.com/xg-wang/silly-snake",
+  "author": "Xingan Wang <wangxgwxg@gmail.com>",
+  "license": "MIT",
+  "dependencies": {
+    "pixi.js": "^4.5.1"
+  },
+  "devDependencies": {
+    "babelify": "^7.3.0",
+    "browser-sync": "^2.18.8",
+    "exorcist": "^0.4.0",
+    "gulp": "^3.9.1",
+    "gulp-sourcemaps": "^2.6.0",
+    "lodash.assign": "^4.2.0",
+    "vinyl-buffer": "^1.0.0",
+    "vinyl-source-stream": "^1.1.0",
+    "watchify": "^3.9.0"
+  }
+}
