@@ -71,7 +71,7 @@ gulp.task('assets', function() {
 /**
  * First bundle, then serve from the ./dist directory
  */
-gulp.task('serve', ['js', 'html', 'css', 'assets'], function () {
+gulp.task('default', ['js', 'html', 'css', 'assets'], function () {
   browserSync.init({
     server: base.dist
   })
