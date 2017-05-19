@@ -23,6 +23,7 @@ var bundler = watchify(browserify(opts))
 
 // Babel transform
 bundler.transform(babelify.configure({
+  presets: ["es2015"],
   sourceMapRelative: base.src + '/js'
 }))
 
