@@ -16,5 +16,5 @@ const snake = new Snake()
 app.stage.addChild(snake)
 
 app.ticker.add((delta) => {
-
+  snake.update(delta)
 })

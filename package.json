@@ -6,6 +6,7 @@
   "author": "Xingan Wang <wangxgwxg@gmail.com>",
   "license": "MIT",
   "dependencies": {
+    "lodash": "^4.17.4",
     "pixi.js": "^4.5.1"
   },
   "devDependencies": {
