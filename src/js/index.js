@@ -1,14 +1,20 @@
 import * as PIXI from 'pixi.js'
-import Snake from './snake'
+import { Snake, CONFIG } from './snake'
 
-// config
-const worldSize = {w: 800, h: 600}
-    , gridSize  = {w: 20, h: 20}
-    , backgroundColor = 0x779966
+const {
+  worldSize, gridSize, backgroundColor
+} = CONFIG
 
-const app = new PIXI.Application(800, 600, {backgroundColor: backgroundColor})
+const app = new PIXI.Application(
+  worldSize.w, worldSize.h,
+  {backgroundColor: backgroundColor}
+)
 document.body.appendChild(app.view)
 
 const snake = new Snake()
 
 app.stage.addChild(snake)
+
+app.ticker.add((delta) => {
+
+})
