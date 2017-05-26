@@ -1,7 +1,7 @@
 import _ from 'lodash'
 import * as CONFIG from './config'
 import {
-  opposite
+  opposite, hitTestRectangle
 } from './utils'
 
 const {
@@ -9,20 +9,31 @@ const {
 } = CONFIG
 
 class Snake extends PIXI.Container {
-  constructor(...args) {
-    super(...args)
+  constructor(renderer) {
+    super()
     // setup
     this.time = 0
     this.direction = 'down'
-    this.bodySize = 1
+    this._texture = this._generateTex(renderer, snakeColor)
     this.body = []
-    this.head = new Square(snakeColor)
+    this.head = this._createSquare()
+    // Starting position
     this.head.position.set(worldSize.w / 2, worldSize.h / 2)
     this.addChild(this.head)
   }
 
+  _generateTex(renderer, color) {
+    const square = new PIXI.Graphics()
+    square.beginFill(color)
+    square.drawRect(0, 0, gridSize.w, gridSize.h)
+    square.endFill()
+    return renderer.generateTexture(square)
+  }
+  _createSquare() {
+    return new PIXI.Sprite(this._texture)
+  }
+
   move(dir) {
-    console.log(this.head.position);
     let prev = this.head.position;
     switch (dir) {
       case 'up':
@@ -55,7 +66,24 @@ class Snake extends PIXI.Container {
     return this.children[this.children.length - 1]
   }
 
+  grow(pos) {
+    const tail = this._createSquare()
+    tail.position.copy(pos)
+    this.body.push(tail)
+    this.addChild(tail)
+  }
+
+  hitSelf(head) {
+    for (let s of this.body) {
+      if (hitTestRectangle(head, s)) {
+        return true
+      }
+    }
+    return false
+  }
+
   nextDirection(dir) {
+    // TODO: combine learning
     let dirs = ['up', 'down', 'left', 'right']
     switch (dir) {
       case 'up':
@@ -74,14 +102,11 @@ class Snake extends PIXI.Container {
         console.error('dir input not supported!', dir)
         break
     }
-    return _.sample(dirs)
-  }
+    // let safeDirs = dirs.filter(d => {
 
-  grow(pos) {
-    const tail = new Square()
-    tail.position.copy(pos)
-    this.body.push(tail)
-    this.addChild(tail)
+    // })
+    return _.sample(dirs)
+
   }
 
   update(delta) {
@@ -90,21 +115,13 @@ class Snake extends PIXI.Container {
     }
     if (this.time === 0) {
       this.direction = this.nextDirection(this.direction)
-      this.move(this.direction)
       const pos = this.tail.position
-      this.grow(pos)
+      // TODO: grow when eat
+      if (this.children.length < 10) {
+        this.grow(pos)
+      }
+      this.move(this.direction)
     }
-  }
-}
-
-class Square extends PIXI.Sprite {
-  constructor(color) {
-    super()
-    this.square = new PIXI.Graphics()
-    this.square.beginFill(color)
-    this.square.drawRect(0, 0, gridSize.w, gridSize.h)
-    this.square.endFill()
-    this.addChild(this.square)
   }
 }
 

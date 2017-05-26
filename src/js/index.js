@@ -11,7 +11,7 @@ const app = new PIXI.Application(
 )
 document.body.appendChild(app.view)
 
-const snake = new Snake()
+const snake = new Snake(app.renderer)
 
 app.stage.addChild(snake)
 
