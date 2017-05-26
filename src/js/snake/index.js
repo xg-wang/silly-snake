@@ -1,11 +1,11 @@
 import _ from 'lodash'
-import * as CONFIG from './config'
+import { CONFIG } from './config'
 import {
   opposite, hitTestRectangle
 } from './utils'
 
 const {
-  worldSize, gridSize, snakeColor
+  worldSize, gridSize, snakeColor, headColor
 } = CONFIG
 
 class Snake extends PIXI.Container {
@@ -14,9 +14,11 @@ class Snake extends PIXI.Container {
     // setup
     this.time = 0
     this.direction = 'down'
-    this._texture = this._generateTex(renderer, snakeColor)
+    this._bodyTexture = this._generateTex(renderer, snakeColor)
+    this._headTexture = this._generateTex(renderer, headColor)
+    console.log(this._bodyTexture, this._headTexture)
     this.body = []
-    this.head = this._createSquare()
+    this.head = this._createSquare(this._headTexture)
     // Starting position
     this.head.position.set(worldSize.w / 2, worldSize.h / 2)
     this.addChild(this.head)
@@ -29,29 +31,14 @@ class Snake extends PIXI.Container {
     square.endFill()
     return renderer.generateTexture(square)
   }
-  _createSquare() {
-    return new PIXI.Sprite(this._texture)
+  _createSquare(t) {
+    return new PIXI.Sprite(t)
   }
 
   move(dir) {
-    let prev = this.head.position;
-    switch (dir) {
-      case 'up':
-        this.head.position.y -= gridSize.h
-        break
-      case 'down':
-        this.head.position.y += gridSize.h
-        break
-      case 'left':
-        this.head.position.x -= gridSize.w
-        break
-      case 'right':
-        this.head.position.x += gridSize.w
-        break
-      default:
-        console.error('dir input not supported!', dir)
-        break
-    }
+    const p = this.head.position
+    let prev = new PIXI.Point(p.x, p.y);
+    this._toNextDirection(this.head, dir)
     for (let s of this.body) {
       const curr = { x: s.x, y: s.y }
       s.position.copy(prev);
@@ -67,8 +54,8 @@ class Snake extends PIXI.Container {
   }
 
   grow(pos) {
-    const tail = this._createSquare()
-    tail.position.copy(pos)
+    const tail = this._createSquare(this._bodyTexture)
+    tail.position.set(pos.x, pos.y)
     this.body.push(tail)
     this.addChild(tail)
   }
@@ -82,7 +69,7 @@ class Snake extends PIXI.Container {
     return false
   }
 
-  nextDirection(dir) {
+  selectNextDirection(dir) {
     // TODO: combine learning
     let dirs = ['up', 'down', 'left', 'right']
     switch (dir) {
@@ -102,11 +89,40 @@ class Snake extends PIXI.Container {
         console.error('dir input not supported!', dir)
         break
     }
-    // let safeDirs = dirs.filter(d => {
-
-    // })
+    let safeDirs = dirs.filter(d => {
+      let hit = false
+      // attemp
+      this._toNextDirection(this.head, d)
+      for (let i = 0; i < this.body.length - 1; i++) {
+        if (hitTestRectangle(this.head, this.body[i])) {
+          hit = true
+          break
+        }
+      }
+      // recover
+      this._toNextDirection(this.head, opposite(d))
+      return !hit
+    })
     return _.sample(dirs)
-
+  }
+  _toNextDirection(head, dir) {
+    switch (dir) {
+      case 'up':
+        head.position.y -= gridSize.h
+        break
+      case 'down':
+        head.position.y += gridSize.h
+        break
+      case 'left':
+        head.position.x -= gridSize.w
+        break
+      case 'right':
+        head.position.x += gridSize.w
+        break
+      default:
+        console.error('dir input not supported!', dir)
+        break
+    }
   }
 
   update(delta) {
@@ -114,13 +130,16 @@ class Snake extends PIXI.Container {
       this.time = 0
     }
     if (this.time === 0) {
-      this.direction = this.nextDirection(this.direction)
-      const pos = this.tail.position
+      this.direction = this.selectNextDirection(this.direction)
+      console.log(this.direction)
+      const pos = new PIXI.Point(this.tail.position.x, this.tail.position.y)
+      this.move(this.direction)
+      console.log('after move', this.tail.position)
       // TODO: grow when eat
       if (this.children.length < 10) {
         this.grow(pos)
+        console.log(this.children)
       }
-      this.move(this.direction)
     }
   }
 }
