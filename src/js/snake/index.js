@@ -17,13 +17,13 @@ class Snake extends PIXI.Container {
     this.bodySize = 1
     this.body = []
     this.head = new Square(snakeColor)
-    this.addChild(this.head, ...this.body)
-    console.log(this)
-
-    this.position.set(worldSize.w / 2, worldSize.h / 2)
+    this.head.position.set(worldSize.w / 2, worldSize.h / 2)
+    this.addChild(this.head)
   }
 
   move(dir) {
+    console.log(this.head.position);
+    let prev = this.head.position;
     switch (dir) {
       case 'up':
         this.head.position.y -= gridSize.h
@@ -41,6 +41,18 @@ class Snake extends PIXI.Container {
         console.error('dir input not supported!', dir)
         break
     }
+    for (let s of this.body) {
+      const curr = { x: s.x, y: s.y }
+      s.position.copy(prev);
+      prev = curr;
+    }
+  }
+
+  get size() {
+    return this.children.length;
+  }
+  get tail() {
+    return this.children[this.children.length - 1]
   }
 
   nextDirection(dir) {
@@ -65,8 +77,11 @@ class Snake extends PIXI.Container {
     return _.sample(dirs)
   }
 
-  grow() {
-
+  grow(pos) {
+    const tail = new Square()
+    tail.position.copy(pos)
+    this.body.push(tail)
+    this.addChild(tail)
   }
 
   update(delta) {
@@ -76,6 +91,8 @@ class Snake extends PIXI.Container {
     if (this.time === 0) {
       this.direction = this.nextDirection(this.direction)
       this.move(this.direction)
+      const pos = this.tail.position
+      this.grow(pos)
     }
   }
 }
