@@ -16,7 +16,6 @@ class Snake extends PIXI.Container {
     this.direction = 'down'
     this._bodyTexture = this._generateTex(renderer, snakeColor)
     this._headTexture = this._generateTex(renderer, headColor)
-    console.log(this._bodyTexture, this._headTexture)
     this.body = []
     this.head = this._createSquare(this._headTexture)
     // Starting position
@@ -103,7 +102,7 @@ class Snake extends PIXI.Container {
       this._toNextDirection(this.head, opposite(d))
       return !hit
     })
-    return _.sample(dirs)
+    return _.sample(safeDirs)
   }
   _toNextDirection(head, dir) {
     switch (dir) {
@@ -131,14 +130,11 @@ class Snake extends PIXI.Container {
     }
     if (this.time === 0) {
       this.direction = this.selectNextDirection(this.direction)
-      console.log(this.direction)
       const pos = new PIXI.Point(this.tail.position.x, this.tail.position.y)
       this.move(this.direction)
-      console.log('after move', this.tail.position)
       // TODO: grow when eat
       if (this.children.length < 10) {
         this.grow(pos)
-        console.log(this.children)
       }
     }
   }
