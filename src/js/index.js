@@ -1,5 +1,5 @@
 import * as PIXI from 'pixi.js'
-import { Snake, CONFIG } from './snake'
+import { Snake, Apple, Manager, CONFIG } from './snake'
 
 const {
   worldSize, gridSize, backgroundColor
@@ -11,10 +11,17 @@ const app = new PIXI.Application(
 )
 document.body.appendChild(app.view)
 
-const snake = new Snake(app.renderer)
+PIXI.loader
+  .add('../assets/snakeset.png')
+  .load(setup)
 
-app.stage.addChild(snake)
+function setup() {
+  console.log('setup')
+  const snake = new Snake(app.renderer)
+  const apple = new Apple()
+  const manager = new Manager(app, snake, apple)
 
-app.ticker.add((delta) => {
-  snake.update(delta)
-})
+  app.ticker.add((delta) => {
+    manager.update(delta)
+  })
+}

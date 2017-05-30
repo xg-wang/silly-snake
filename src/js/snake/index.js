@@ -3,6 +3,8 @@ import { CONFIG } from './config'
 import {
   opposite, hitTestRectangle
 } from './utils'
+import { Apple } from './apple'
+import { Manager } from './manager'
 
 const {
   worldSize, gridSize, snakeColor, headColor
@@ -140,4 +142,4 @@ class Snake extends PIXI.Container {
   }
 }
 
-export { Snake, CONFIG }
+export { Snake, Apple, Manager, CONFIG }
