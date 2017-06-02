@@ -46,8 +46,8 @@ class Snake extends PIXI.Container {
     // Starting position
     this.head.position.set(worldSize.w / 2, worldSize.h / 2)
     this.addChild(this.head)
-    this.m = new AbstractMap()
-    this.m.setPosition(this.head.position)
+    this.abstractMap = new AbstractMap()
+    this.abstractMap.setPosition(this.head.position)
   }
 
   _generateTex(renderer, color) {
@@ -65,7 +65,7 @@ class Snake extends PIXI.Container {
     const p = this.head.position
     let prev = new PIXI.Point(p.x, p.y);
     this._toNextDirection(this.head, dir)
-    this.m.snakeMove(this.head.position, this.tail.position)
+    this.abstractMap.snakeMove(this.head.position, this.tail.position)
     for (let s of this.body) {
       const curr = { x: s.x, y: s.y }
       s.position.copy(prev);
@@ -85,7 +85,7 @@ class Snake extends PIXI.Container {
     tail.position.set(pos.x, pos.y)
     this.body.push(tail)
     this.addChild(tail)
-    this.m.setPosition(pos)
+    this.abstractMap.setPosition(pos)
   }
 
   selectNextDirection(dir) {
@@ -112,7 +112,7 @@ class Snake extends PIXI.Container {
       let hit = false
       // attemp
       this._toNextDirection(this.head, d)
-      if (this.m.checkPos(this.head.position)) {
+      if (this.abstractMap.checkPos(this.head.position)) {
         hit = true
       }
       // recover
