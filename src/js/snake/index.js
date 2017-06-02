@@ -10,6 +10,29 @@ const {
   worldSize, gridSize, snakeColor, headColor
 } = CONFIG
 
+class AbstractMap {
+  constructor() {
+    this.rows = Math.floor(worldSize.h / gridSize.h)
+    this.cols = Math.floor(worldSize.w / gridSize.w)
+    this.map = new Array(this.rows * this.cols)
+    this.map.fill(false)
+  }
+  setPosition(pos, value = true) {
+    const row = Math.floor(pos.y / gridSize.h)
+    const col = Math.floor(pos.x / gridSize.w)
+    this.map[this.cols * row + col] = value
+  }
+  snakeMove(headPos, tailPos) {
+    this.setPosition(headPos, true)
+    this.setPosition(tailPos, false)
+  }
+  checkPos(pos) {
+    const row = Math.floor(pos.y / gridSize.h)
+    const col = Math.floor(pos.x / gridSize.w)
+    return this.map[this.cols * row + col]
+  }
+}
+
 class Snake extends PIXI.Container {
   constructor(renderer) {
     super()
@@ -23,6 +46,8 @@ class Snake extends PIXI.Container {
     // Starting position
     this.head.position.set(worldSize.w / 2, worldSize.h / 2)
     this.addChild(this.head)
+    this.m = new AbstractMap()
+    this.m.setPosition(this.head.position)
   }
 
   _generateTex(renderer, color) {
@@ -40,6 +65,7 @@ class Snake extends PIXI.Container {
     const p = this.head.position
     let prev = new PIXI.Point(p.x, p.y);
     this._toNextDirection(this.head, dir)
+    this.m.snakeMove(this.head.position, this.tail.position)
     for (let s of this.body) {
       const curr = { x: s.x, y: s.y }
       s.position.copy(prev);
@@ -59,15 +85,7 @@ class Snake extends PIXI.Container {
     tail.position.set(pos.x, pos.y)
     this.body.push(tail)
     this.addChild(tail)
-  }
-
-  hitSelf(head) {
-    for (let s of this.body) {
-      if (hitTestRectangle(head, s)) {
-        return true
-      }
-    }
-    return false
+    this.m.setPosition(pos)
   }
 
   selectNextDirection(dir) {
@@ -94,11 +112,8 @@ class Snake extends PIXI.Container {
       let hit = false
       // attemp
       this._toNextDirection(this.head, d)
-      for (let i = 0; i < this.body.length - 1; i++) {
-        if (hitTestRectangle(this.head, this.body[i])) {
-          hit = true
-          break
-        }
+      if (this.m.checkPos(this.head.position)) {
+        hit = true
       }
       // recover
       this._toNextDirection(this.head, opposite(d))

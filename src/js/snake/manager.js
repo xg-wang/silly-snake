@@ -1,3 +1,9 @@
+import { CONFIG } from './config'
+
+const {
+  worldSize, gridSize
+} = CONFIG
+
 class Manager {
   constructor(app, snake, apple) {
     this.app = app
@@ -8,6 +14,10 @@ class Manager {
 
   update(delta) {
     this.snake.update(delta)
+  }
+
+  nextApplePosition() {
+
   }
 }
 
