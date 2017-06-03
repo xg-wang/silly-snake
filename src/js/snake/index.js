@@ -1,7 +1,7 @@
 import _ from 'lodash'
 import { CONFIG } from './config'
 import {
-  opposite, hitTestRectangle
+  opposite, getRandomInt
 } from './utils'
 import { Apple } from './apple'
 import { Manager } from './manager'
@@ -30,6 +30,17 @@ class AbstractMap {
     const row = Math.floor(pos.y / gridSize.h)
     const col = Math.floor(pos.x / gridSize.w)
     return this.map[this.cols * row + col]
+  }
+  pointFromIdx(idx) {
+    const col = idx % this.cols
+    const row = Math.floor(idx / this.cols)
+    return {
+      x: col * gridSize.h,
+      y: row * gridSize.w
+    }
+  }
+  get size() {
+    return this.map.length
   }
 }
 
@@ -154,6 +165,27 @@ class Snake extends PIXI.Container {
         this.grow(pos)
       }
     }
+  }
+
+  /**
+   * @returns Point?
+   */
+  randomEmptyPosition() {
+    const emptyNum = this.abstractMap.size - this.size
+    if (emptyNum === 0) {
+      return null
+    }
+    let randomIdx = getRandomInt(0, emptyNum)
+    for (let i = 0; i < this.abstractMap.size; i++) {
+      if (randomIdx === 0) {
+        return this.abstractMap.pointFromIdx(i)
+      } else if (!this.abstractMap.map[i]) {
+        randomIdx--
+      }
+    }
+  }
+  eatApple(applePos) {
+    return this.abstractMap.checkPos(applePos)
   }
 }
 
