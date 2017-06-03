@@ -7,7 +7,7 @@ import { Apple } from './apple'
 import { Manager } from './manager'
 
 const {
-  worldSize, gridSize, snakeColor, headColor
+  worldSize, gridSize, snakeColor, headColor, backgroundColor
 } = CONFIG
 
 class AbstractMap {
@@ -62,9 +62,12 @@ class Snake extends PIXI.Container {
   }
 
   _generateTex(renderer, color) {
+    const radius = Math.min(gridSize.w, gridSize.h) / 10
+    const lineWidth = Math.min(gridSize.w, gridSize.h) / 10
     const square = new PIXI.Graphics()
+    square.lineStyle(lineWidth, backgroundColor, 1);
     square.beginFill(color)
-    square.drawRect(0, 0, gridSize.w, gridSize.h)
+    square.drawRoundedRect(0, 0, gridSize.w, gridSize.h, radius)
     square.endFill()
     return renderer.generateTexture(square)
   }
