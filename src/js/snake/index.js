@@ -102,6 +102,15 @@ class Snake extends PIXI.Container {
     this.abstractMap.setPosition(pos)
   }
 
+  /**
+   * Use RL to decide which direction snake should take
+   *
+   * @param {'up'|'down'|'left'|'right'} dir
+   * @param {{x: number, y: number}} applePos
+   * @returns {'up'|'down'|'left'|'right'}
+   *
+   * @memberof Snake
+   */
   selectNextDirection(dir, applePos) {
     // TODO: combine learning
     let dirs = ['up', 'down', 'left', 'right']
