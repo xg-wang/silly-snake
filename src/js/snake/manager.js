@@ -1,4 +1,5 @@
 import { CONFIG } from './config'
+import { QLearner } from '../learning'
 
 const {
   worldSize, gridSize
@@ -11,19 +12,15 @@ class Manager {
     this.apple = apple
     this.apple.moveTo(this.nextApplePosition())
     this.app.stage.addChild(snake, apple.sprite)
-    this.explorationRate = 40
-    this.score = 0
-    this.restartCount = 0
-    this.iterations = 0
-    this.oldQvalue = 0.0
-    this.learnRate = 0.001
-    this.gamma = 0.9
+    this.learner = new QLearner(snake, apple)
   }
 
   update(delta) {
-    const state = this.snake.update(delta, this.apple.position)
+    const dir = this.learner.iterate()
+    const state = this.snake.update(delta, dir, this.apple.position)
     switch (state) {
-      case 'end':
+      case 'out':
+      case 'eat_self':
         this.snake.reset()
       case 'eat':
         const newPos = this.nextApplePosition()
@@ -32,114 +29,12 @@ class Manager {
       default:
         break
     }
+    this.learner.updateQ(state)
   }
 
   nextApplePosition() {
     return this.snake.randomEmptyPosition()
   }
-
-//============================================
-  checkEncounterBody(){
-    // if head encounter body, return true
-    // else return false
-  }
-
-  checkEncounterWall(){
-    //
-  }
-
-  reward() {
-    if (this.snake.head.position.x== this.apple.position.x && this.snake.head.position.y == this.apple.position.y) {   
-      // apple become a part of body, need to rewrite grow()
-      this.snake.grow(this.snake.head)
-
-      // check apple position, apple cannot be on snake body
-      this.apple.moveTo(this.nextApplePosition)   
-      this.explorationRate = this.explorationRate / 3
-      this.score = this.score + 1
-      this.restartCount = 0
-      return 1000.0
-    } 
-    else if (checkEncounterBody()) {
-      this.score = 0
-      this.restartCount = 0
-      // restart()
-      this.restartCount = this.restartCount + 1
-      return -100000.0
-    }
-    else if (checkEncounterWall()) {
-      // restart
-      this.restartCount = this.restartCount + 1
-      return -1000.0
-    }
-
-    if (this.restartCount > 50) {
-      this.explorationRate = 20
-    }
-
-    rwd = sqrt((this.snake.head.position.x - this.apple.position.x) * (this.snake.head.position.x - 
-      this.apple.position.x) + (this.snake.head.position.y - this.apple.position.y) * (this.snake.head.position.y - 
-      this.apple.position.y))
-
-    return -rwd
-  }
-
-  getQValue(pos) {
-    qValue = sqrt((pos.position.x - this.apple.position.x) * (pos.position.x - 
-      this.apple.position.x) + (pos.position.y - this.apple.position.y) * (pos.position.y - 
-      this.apple.position.y))
-    return qValue
-  }
-
-  maxQValue() {
-    newQvalue = 0.0
-
-    //new four points: upPos, downPos, leftPos, rightPos
-    // checkEncounterBody
-
-    //upQvalue = getQValue(upPos)
-    
-    //downQvalue = getQValue(downPos)
-
-    //leftQvalue = getQValue(leftPos)
-
-    //rightQvalue = getQValue(rightPos) 
-
-    newQvalue = max(upQvalue, downQvalue, leftQvalue, rightQvalue)
-    return newQvalue
-  }
-
-  itera() {
-    this.iterations = this.iterations + 1
-
-    newQvalue = 0.0
-    if (getRandomInt(0, 100) > this.explorationRate) {
-      newQvalue = maxQValue()
-    }
-    else {
-      num = getRandomInt(0, 4)
-      // point: pos
-      if (num == 0) {
-        // pos = upPos
-      }
-      else if (num == 1) {
-        // pos = downPos
-      }
-      else if (num == 2) {
-        // pos = leftPos
-      }
-      else {
-        // pos = rightPos
-      }
-
-      newQvalue = getQValue(pos)
-    }
-    move()
-    rwd = reward()
-    oldQvalue += this.learnRate * (rwd + this.gamma * newQvalue - oldQvalue)
-  }
-  
-
 
 }
 
