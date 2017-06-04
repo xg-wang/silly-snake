@@ -14,11 +14,16 @@ class Manager {
   }
 
   update(delta) {
-    this.snake.update(delta, this.apple.position)
-    // TODO: game end
-    if (this.snake.eatApple(this.apple.position)) {
-      const newPos = this.nextApplePosition()
-      this.apple.moveTo(newPos)
+    const state = this.snake.update(delta, this.apple.position)
+    switch (state) {
+      case 'end':
+        this.snake.reset()
+      case 'eat':
+        const newPos = this.nextApplePosition()
+        this.apple.moveTo(newPos)
+        break
+      default:
+        break
     }
   }
 

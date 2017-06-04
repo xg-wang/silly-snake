@@ -63,6 +63,10 @@ class Snake extends PIXI.Container {
     this.direction = 'down'
     this._bodyTexture = this._generateTex(renderer, snakeColor)
     this._headTexture = this._generateTex(renderer, headColor)
+    this.reset()
+  }
+  reset() {
+    this.removeChildren()
     this.body = []
     this.head = this._createSquare(this._headTexture)
     // Starting position
