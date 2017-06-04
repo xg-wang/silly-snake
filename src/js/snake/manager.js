@@ -14,7 +14,7 @@ class Manager {
   }
 
   update(delta) {
-    this.snake.update(delta)
+    this.snake.update(delta, this.apple.position)
     // TODO: game end
     if (this.snake.eatApple(this.apple.position)) {
       const newPos = this.nextApplePosition()

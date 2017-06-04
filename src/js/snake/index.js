@@ -102,7 +102,7 @@ class Snake extends PIXI.Container {
     this.abstractMap.setPosition(pos)
   }
 
-  selectNextDirection(dir) {
+  selectNextDirection(dir, applePos) {
     // TODO: combine learning
     let dirs = ['up', 'down', 'left', 'right']
     switch (dir) {
@@ -155,12 +155,12 @@ class Snake extends PIXI.Container {
     }
   }
 
-  update(delta) {
+  update(delta, applePos) {
     if ((this.time += delta )> 20) {
       this.time = 0
     }
     if (this.time === 0) {
-      this.direction = this.selectNextDirection(this.direction)
+      this.direction = this.selectNextDirection(this.direction, applePos)
       const pos = new PIXI.Point(this.tail.position.x, this.tail.position.y)
       this.move(this.direction)
       // TODO: grow when eat
