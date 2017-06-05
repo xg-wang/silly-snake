@@ -21,9 +21,9 @@ class Manager {
       this.time = 0
     }
     if (this.time === 0) {
-      const dir = this.learner.iterate()
-      const state = this.snake.update(delta, dir, this.apple.position)
-      console.log(`dir: ${dir}, state: ${state}`)
+      const act = this.learner.selectDirection()
+      const state = this.snake.update(delta, act, this.apple.position)
+      console.log(`act: ${act}, state: ${state}`)
       switch (state) {
         case 'out':
         case 'eat_self':
