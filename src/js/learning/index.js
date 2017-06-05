@@ -34,12 +34,12 @@ class QLearner {
   }
 
   updateQ(state) {
-    let rwd = this.reward()
+    let rwd = this.reward(state)
     this.oldQValue += this.learnRate * (rwd + this.gamma * this.currQValue - this.oldQValue)
   }
 
-  reward() {
-    if (this.snake.head.position.x== this.apple.position.x && this.snake.head.position.y == this.apple.position.y) {
+  reward(state) {
+    if (state == 'eat') {
       // apple become a part of body, need to rewrite grow()
       // this.snake.grow(this.snake.head)
       // check apple position, apple cannot be on snake body
@@ -49,14 +49,14 @@ class QLearner {
       this.restartCount = 0
       return 1000.0
     }
-    else if (!this.snake.abstractMap.snakeMove(this.snake.head.position, this.snake.tail.position)) {
+    else if (state == 'eat_self') {
       this.score = 0
       this.restartCount = 0
       this.snake.reset()
       this.restartCount = this.restartCount + 1
       return -100000.0
     }
-    else if (this.snake._checkBoundary(this.snake.head.position)) {
+    else if (state == 'out') {
       this.snake.reset()
       this.restartCount = this.restartCount + 1
       return -1000.0
