@@ -4,6 +4,11 @@ import {
   opposite, DIRECTIONS
 } from '../snake/utils'
 import { Rewards } from './config'
+import { CONFIG } from '../snake/config'
+
+const {
+  gridSize, worldSize
+} = CONFIG
 
 class RlEnv {
   constructor(snake, apple) {
@@ -57,12 +62,12 @@ class RlEnv {
   }
 
   getState(dir) {
-    let head_x = this.snake.head.position._x;
-    let head_y = this.snake.head.position._y;
-    let tail_x = this.snake.tail.position._x;
-    let tail_y = this.snake.tail.position._y;
-    let apple_x = this.apple.position._x;
-    let apple_y = this.apple.position._y;
+    let head_x = this.snake.head.position.x;
+    let head_y = this.snake.head.position.y;
+    let tail_x = this.snake.tail.position.x;
+    let tail_y = this.snake.tail.position.y;
+    let apple_x = this.apple.position.x;
+    let apple_y = this.apple.position.y;
     let direction = dir || this.snake.direction;
     let state = {
       ws: false,
@@ -82,24 +87,48 @@ class RlEnv {
     // check if there's a wall straight/left/right to the head, be that snake's children or the boundary
     switch (direction) {
       case 'up':
-        state.ws = head_y - gridSize.h < 0 ? true : this.snake.abstractMap.checkPos({x: head_x, y: head_y - gridSize.h})
-        state.wl = head_x - gridSize.w < 0 ? true : this.snake.abstractMap.checkPos({x: head_x - gridSize.w, y: head_y})
-        state.wr = head_x + gridSize.w >= worldSize.w ? true : this.snake.abstractMap.checkPos({x: head_x + gridSize.w, y: head_y})
+        state.ws = head_y - gridSize.h < 0
+          ? true
+          : this.snake.abstractMap.checkPos({x: head_x, y: head_y - gridSize.h})
+        state.wl = head_x - gridSize.w < 0
+          ? true
+          : this.snake.abstractMap.checkPos({x: head_x - gridSize.w, y: head_y})
+        state.wr = head_x + gridSize.w >= worldSize.w
+          ? true
+          : this.snake.abstractMap.checkPos({x: head_x + gridSize.w, y: head_y})
         break
       case 'down':
-        state.ws = head_y + gridSize.h >= worldSize.h ? true : this.snake.abstractMap.checkPos({x: head_x, y: head_y + gridSize.h})
-        state.wr = head_x - gridSize.w < 0 ? true : this.snake.abstractMap.checkPos({x: head_x - gridSize.w, y: head_y})
-        state.wl = head_x + gridSize.w >= worldSize.w ? true : this.snake.abstractMap.checkPos({x: head_x + gridSize.w, y: head_y})
+        state.ws = head_y + gridSize.h >= worldSize.h
+          ? true
+          : this.snake.abstractMap.checkPos({x: head_x, y: head_y + gridSize.h})
+        state.wr = head_x - gridSize.w < 0
+          ? true
+          : this.snake.abstractMap.checkPos({x: head_x - gridSize.w, y: head_y})
+        state.wl = head_x + gridSize.w >= worldSize.w
+          ? true
+          : this.snake.abstractMap.checkPos({x: head_x + gridSize.w, y: head_y})
         break
       case 'left':
-        state.wl = head_y + gridSize.h >= worldSize.h ? true : this.snake.abstractMap.checkPos({x: head_x, y: head_y + gridSize.h})
-        state.ws = head_x - gridSize.w < 0 ? true : this.snake.abstractMap.checkPos({x: head_x - gridSize.w, y: head_y})
-        state.wr = head_y - gridSize.h < 0 ? true : this.snake.abstractMap.checkPos({x: head_x, y: head_y - gridSize.h})
+        state.wl = head_y + gridSize.h >= worldSize.h
+          ? true
+          : this.snake.abstractMap.checkPos({x: head_x, y: head_y + gridSize.h})
+        state.ws = head_x - gridSize.w < 0
+          ? true
+          : this.snake.abstractMap.checkPos({x: head_x - gridSize.w, y: head_y})
+        state.wr = head_y - gridSize.h < 0
+          ? true
+          : this.snake.abstractMap.checkPos({x: head_x, y: head_y - gridSize.h})
         break
       case 'right':
-        state.wl = head_y - gridSize.h < 0 ? true : this.snake.abstractMap.checkPos({x: head_x, y: head_y - gridSize.h})
-        state.wr = head_y + gridSize.h >= worldSize.h ? true : this.snake.abstractMap.checkPos({x: head_x, y: head_y + gridSize.h})
-        state.ws = head_x + gridSize.w >= worldSize.w ? true : this.snake.abstractMap.checkPos({x: head_x + gridSize.w, y: head_y})
+        state.wl = head_y - gridSize.h < 0
+          ? true
+          : this.snake.abstractMap.checkPos({x: head_x, y: head_y - gridSize.h})
+        state.wr = head_y + gridSize.h >= worldSize.h
+          ? true
+          : this.snake.abstractMap.checkPos({x: head_x, y: head_y + gridSize.h})
+        state.ws = head_x + gridSize.w >= worldSize.w
+          ? true
+          : this.snake.abstractMap.checkPos({x: head_x + gridSize.w, y: head_y})
         break
       default:
         console.error('dir input not supported!', dir)
