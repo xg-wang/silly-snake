@@ -143,11 +143,10 @@ class RlEnv {
   }
 
   getEncodedStr(st) {
-    let keys = [ "ws","wl","wr","qfu","qfl","qtu","qtl"];
-    let state = st || this.getState();
-    let str = '';
+    let keys = [ "ws","wl","wr","qfu","qfl","qtu","qtl"]
+    let state = st || this.getState()
+    let str = ''
     keys.forEach((key) => {
-      // console.log(key);
       str = str + (state[key] ? '1' : '0')
     })
     return str
@@ -166,7 +165,7 @@ class RlEnv {
   // takes an integer s and returns a list of available actions, which should be integers from zero to maxNumActions
   allowedActions(s) {
     let state = this.decodeState(s)
-    let poss = [];
+    let poss = []
     if (state.ws == false) {
       poss.push(0)
     }

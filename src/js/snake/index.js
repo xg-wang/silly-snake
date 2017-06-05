@@ -111,6 +111,7 @@ class Snake extends PIXI.Container {
       s.position.copy(prev);
       prev = curr;
     }
+    // check distance
     return 'continue'
   }
   /**
@@ -141,32 +142,6 @@ class Snake extends PIXI.Container {
     this.abstractMap.setPosition(pos)
   }
 
-  /**
-   * Use RL to decide which direction snake should take
-   *
-   * @param {'up'|'down'|'left'|'right'} dir
-   * @param {{x: number, y: number}} applePos
-   * @returns {'up'|'down'|'left'|'right'}
-   *
-   * @memberof Snake
-   */
-  selectNextDirection(dir, applePos) {
-    // TODO: combine learning
-    let dirs = ['up', 'down', 'left', 'right']
-    _.pull(dirs, dir)
-    let safeDirs = dirs.filter(d => {
-      let hit = false
-      // attemp
-      this.toNextDirection(this.head, d)
-      if (this.abstractMap.checkPos(this.head.position)) {
-        hit = true
-      }
-      // recover
-      this.toNextDirection(this.head, opposite(d))
-      return !hit
-    })
-    return _.sample(safeDirs)
-  }
   toNextDirection(head, dir) {
     switch (dir) {
       case 'up':
@@ -195,13 +170,12 @@ class Snake extends PIXI.Container {
    * @returns {'out'|'eat_self'|'eat'|'continue'}
    */
   update(delta, dir, applePos) {
-    this.direction = dir // this.selectNextDirection(this.direction, applePos)
+    this.direction = dir
     const pos = new PIXI.Point(this.tail.position.x, this.tail.position.y)
     const moveResult = this.move(this.direction)
-    if (moveResult !== 'continue') {
+    if (moveResult === 'out' || moveResult === 'eat_self') {
       return moveResult
     }
-    // TODO: grow only when eat
     if (this.eatApple(applePos)) {
       this.grow(pos)
       return 'eat'

@@ -14,29 +14,39 @@ class Manager {
     this.apple.moveTo(this.nextApplePosition())
     this.app.stage.addChild(snake, apple.sprite)
     this.learner = new QLearner(snake, apple)
+    this.prevDistance = this._getDistance()
   }
 
   update(delta) {
-    if ((this.time += delta) > 5) {
+    if ((this.time += delta) > 2) {
       this.time = 0
     }
     if (this.time === 0) {
       const newDir = this.learner.selectDirection()
-      const state = this.snake.update(delta, newDir, this.apple.position)
-      console.log(`dir: ${newDir}, state: ${state}`)
+      let state = this.snake.update(delta, newDir, this.apple.position)
+      // console.log(`dir: ${newDir}, state: ${state}`)
       switch (state) {
         case 'out':
         case 'eat_self':
           this.snake.reset()
+          this.prevDistance = 0
         case 'eat':
           const newPos = this.nextApplePosition()
           this.apple.moveTo(newPos)
+          break
+        case 'continue':
+          state = this._getDistance() > this.prevDistance ? 'move_further' : 'move_closer'
           break
         default:
           break
       }
       this.learner.updateQ(state)
     }
+  }
+  _getDistance(aP, sP) {
+    const appleP = aP || this.apple.position
+        , snakeP = sP || this.snake.head.position
+    return (appleP.x - snakeP.x) ** 2 + (appleP.y - snakeP.y) ** 2
   }
 
   nextApplePosition() {
