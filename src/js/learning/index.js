@@ -66,7 +66,7 @@ class QLearner {
       this.explorationRate = 20
     }
 
-    rwd = Math.sqrt((this.snake.head.position.x - this.apple.position.x) * (this.snake.head.position.x -
+    let rwd = Math.sqrt((this.snake.head.position.x - this.apple.position.x) * (this.snake.head.position.x -
     this.apple.position.x) + (this.snake.head.position.y - this.apple.position.y) * (this.snake.head.position.y -
     this.apple.position.y))
 
