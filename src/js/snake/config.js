@@ -4,7 +4,10 @@ const CONFIG = {
   gridSize: {w: 20, h: 20},
   backgroundColor: 0x779966,  // green
   headColor: 0x66CCFF,  // light blue
-  snakeColor: 0x000000  // black
+  snakeColor: 0x000000,  // black
+  eatSelfReward: -10000,
+  eatAppleReward: 100000,
+  moveReward: 0
 }
 
 export { CONFIG }

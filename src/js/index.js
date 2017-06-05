@@ -1,5 +1,6 @@
 import * as PIXI from 'pixi.js'
-import { Snake, Apple, Manager, CONFIG } from './snake'
+import { Snake, Apple, CONFIG } from './snake'
+import { Manager } from './snake/manager'
 import {RL} from './rl'
 
 const {
@@ -15,6 +16,7 @@ document.body.appendChild(app.view)
 PIXI.loader
   .add('../assets/snakeset.png')
   .load(setup)
+
 
 function setup() {
   console.log('setup')
@@ -39,10 +41,12 @@ function setup() {
   var agent = new RL.TDAgent(manager, spec);
 
   app.ticker.add((delta) => {
-    // var a = agent.act(manager.getEncodedState());
-    // var reward = manager.update(delta, a);
-    // console.log(manager.getEncodedState());
+    var a = agent.act(manager.getEncodedState());
+    console.log('action:', a);
+    var reward = manager.update(delta, a);
+    console.log('reward: ', reward);
+    console.log(manager.getEncodedState());
     manager.update(delta);
-    // agent.learn(reward);
+    agent.learn(reward);
   })
 }

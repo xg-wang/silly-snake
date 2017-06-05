@@ -4,10 +4,9 @@ import {
   opposite, getRandomInt
 } from './utils'
 import { Apple } from './apple'
-import { Manager } from './manager'
 
 const {
-  worldSize, gridSize, snakeColor, headColor, backgroundColor
+  worldSize, gridSize, snakeColor, headColor, backgroundColor, eatSelfReward, eatAppleReward, moveReward
 } = CONFIG
 
 class AbstractMap {
@@ -59,6 +58,7 @@ class Snake extends PIXI.Container {
     this.addChild(this.head)
     this.abstractMap = new AbstractMap()
     this.abstractMap.setPosition(this.head.position)
+    this.renderer = renderer
   }
 
   _generateTex(renderer, color) {
@@ -77,14 +77,18 @@ class Snake extends PIXI.Container {
 
   move(dir) {
     const p = this.head.position
-    let prev = new PIXI.Point(p.x, p.y);
+    let prev = new PIXI.Point(p.x, p.y)
     this._toNextDirection(this.head, dir)
+    if (this.abstractMap.checkPos(this.head.position)) {
+      return eatSelfReward // -10000 reward if eat itself
+    }
     this.abstractMap.snakeMove(this.head.position, this.tail.position)
     for (let s of this.body) {
       const curr = { x: s.x, y: s.y }
       s.position.copy(prev);
       prev = curr;
     }
+    return moveReward // 0 reward for just moving around
   }
 
   get size() {
@@ -199,11 +203,13 @@ class Snake extends PIXI.Container {
     if (this.time === 0) {
       this.direction = this.selectNextDirection(this.direction, applePos, a)
       const pos = new PIXI.Point(this.tail.position.x, this.tail.position.y)
-      this.move(this.direction)
+      let reward = this.move(this.direction)
       // TODO: grow when eat
-      if (this.children.length < 10) {
-        this.grow(pos)
+      if (reward == moveReward && this.eatApple(applePos)) {
+        this.grow(pos);
+        return eatAppleReward; // huge reward
       }
+      return reward;
     }
   }
 
@@ -229,4 +235,4 @@ class Snake extends PIXI.Container {
   }
 }
 
-export { Snake, Apple, Manager, CONFIG }
+export { Snake, Apple, CONFIG }

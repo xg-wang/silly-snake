@@ -1,7 +1,8 @@
 import { CONFIG } from './config'
+import { Snake } from './index'
 
 const {
-  worldSize, gridSize
+  worldSize, gridSize, eatSelfReward, eatAppleReward, moveReward
 } = CONFIG
 
 class Manager {
@@ -134,13 +135,15 @@ class Manager {
   }
 
   update(delta, a) {
-    this.snake.update(delta, this.apple.position, a)
-    // TODO: game end
-    if (this.snake.eatApple(this.apple.position)) {
+    let reward = this.snake.update(delta, this.apple.position, a)
+    if (reward != eatSelfReward && this.snake.eatApple(this.apple.position)) {
       const newPos = this.nextApplePosition()
       this.apple.moveTo(newPos)
-      return 100000; // huge reward
     }
+    if (reward == eatSelfReward) { // restart the game
+      this.snake = new Snake(this.snake.renderer)
+    }
+    return reward;
   }
 
   nextApplePosition() {
