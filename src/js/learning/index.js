@@ -7,14 +7,14 @@ class QLearner {
   constructor(snake, apple) {
     this.snake = snake
     this.apple = apple
-    this.explorationRate = 40
+    this.explorationRate = 1
     this.score = 0
     this.restartCount = 0
     this.iterations = 0
     this.oldQValue = 0
     this.currQValue = 0
     this.learnRate = 0.001
-    this.gamma = 0.9
+    this.gamma = 0.95
   }
 
   iterate() {
@@ -52,12 +52,12 @@ class QLearner {
     else if (state == 'eat_self') {
       this.score = 0
       this.restartCount = 0
-      this.snake.reset()
+      // this.snake.reset()
       this.restartCount = this.restartCount + 1
       return -100000.0
     }
     else if (state == 'out') {
-      this.snake.reset()
+      // this.snake.reset()
       this.restartCount = this.restartCount + 1
       return -1000.0
     }
@@ -77,7 +77,7 @@ class QLearner {
     // const headPos = this.snake.head.position.clone()
     const headPos = { position: {x: this.snake.head.position.x, y: this.snake.head.position.y} }
     this.snake.toNextDirection(headPos, dir)
-    return Math.sqrt(
+    return -Math.sqrt(
       Math.pow((headPos.position.x - this.apple.position.x), 2) +
       Math.pow((headPos.position.y - this.apple.position.y), 2)
     )
