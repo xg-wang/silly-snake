@@ -1,6 +1,6 @@
 // config
 const CONFIG = {
-  worldSize: {w: 800, h: 600},
+  worldSize: {w: 400, h: 400},
   gridSize: {w: 20, h: 20},
   backgroundColor: 0x779966,  // green
   headColor: 0x66CCFF,  // light blue
@@ -9,7 +9,7 @@ const CONFIG = {
   eatAppleReward: 10000000,
   moveFurtherReward: 0,
   moveCloserReward: 0,
-  getOutReward: -10000000000,
+  getOutReward: -100000,
   moveReward: 0
 }
 

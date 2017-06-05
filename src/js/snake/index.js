@@ -141,6 +141,7 @@ class Snake extends PIXI.Container {
   selectNextDirection(dir, applePos, a) {
     // TODO: combine learning
     if (a != undefined) {
+      // console.log('prevDir is ', this.direction);
       switch(this.direction) {
         case 'up':
           if (a == 0) return 'up'
@@ -248,10 +249,10 @@ class Snake extends PIXI.Container {
         reward = eatAppleReward
         this.grow(pos)
       } else if (currDistance < prevDistance) {
-        console.log('moved closer!');
+        // console.log('moved closer!');
         reward = moveCloserReward
       } else if (currDistance > prevDistance) {
-        console.log('moved further!');
+        // console.log('moved further!');
         reward = moveFurtherReward
       }
       return reward;

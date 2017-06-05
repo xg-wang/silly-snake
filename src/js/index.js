@@ -4,7 +4,7 @@ import { Manager } from './snake/manager'
 import {RL} from './rl'
 
 const {
-  worldSize, gridSize, backgroundColor
+  worldSize, gridSize, backgroundColor, eatSelfReward
 } = CONFIG
 
 const app = new PIXI.Application(
@@ -29,9 +29,9 @@ function setup() {
 
   var spec = {}
   spec.update = 'qlearn'; // 'qlearn' or 'sarsa'
-  spec.gamma = 0.8; // discount factor, [0, 1)
-  spec.epsilon = 0.1; // initial epsilon for epsilon-greedy policy, [0, 1)
-  spec.alpha = 0.1; // value function learning rate
+  spec.gamma = 0.6; // discount factor, [0, 1)
+  spec.epsilon = 0; // initial epsilon for epsilon-greedy policy, [0, 1)
+  spec.alpha = 0.15; // value function learning rate
   spec.lambda = 0; // eligibility trace decay, [0,1). 0 = no eligibility traces
   spec.replacing_traces = true; // use replacing or accumulating traces
   spec.planN = 50; // number of planning steps per iteration. 0 = no planning
@@ -39,12 +39,23 @@ function setup() {
   spec.beta = 0.1; // learning rate for smooth policy update
 
   var agent = new RL.TDAgent(manager, spec);
+  var a;
+  var reward;
 
   app.ticker.add((delta) => {
-    var a = agent.act(manager.getEncodedState());
-    console.log(`x: ${snake.head.position._x}, y: ${snake.head.position._y}`);
-    console.log('action:', a);
-    var reward = manager.update(delta, a);
+    try {
+      a = agent.act(manager.getEncodedState());
+      // console.log(`x: ${snake.head.position._x}, y: ${snake.head.position._y}`);
+      // console.log('action:', a);
+      console.log('current length: ', manager.snake.body.length);
+      reward = manager.update(delta, a);
+    }catch(err) {
+      if (err.message == "wtf") {
+        manager.reset();
+        reward = eatSelfReward;
+      }
+    }
+
     // console.log(manager.getEncodedState());
     if (reward != undefined) {
       console.log('reward: ', reward);

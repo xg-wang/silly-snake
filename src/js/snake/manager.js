@@ -25,7 +25,9 @@ class Manager {
    * wl: whether there is a wall to the left of the head
    * wr: whether there is a wall to the right of the head
    * qfu: whether food position is upper
+   * qfd: whether food position is down
    * qfl: whether food position is left
+   * qfr: whether food position is right
    * qtu: whether tail position is upper
    * qtl: whether tail position is left
    * In terms of actions, we have:
@@ -37,30 +39,36 @@ class Manager {
     return 128;
   }
 
-  decodeState(s) {
+  decodeToStr(s) {
     var dec2bin = (dec) => {
-        return (dec >>> 0).toString(2);
-    };
-    var str = dec2bin(s);
+        return (dec >>> 0).toString(2)
+    }
+    var str = dec2bin(s).split('').join('')
+    str = Array(7 - str.length + 1).join('0') + str
+    return str
+  }
+
+  decodeState(s) {
+    let str = this.decodeToStr(s)
     return {
-      ws: s[0] == 1,
-      wl: s[1] == 1,
-      wr: s[2] == 1,
-      qfu: s[3] == 1,
-      qfd: s[4] == 1,
-      qtu: s[5] == 1,
-      qtd: s[6] == 1
+      ws: str[0] == 1,
+      wl: str[1] == 1,
+      wr: str[2] == 1,
+      qfu: str[3] == 1,
+      qfl: str[4] == 1,
+      qtu: str[5] == 1,
+      qtl: str[6] == 1
     };
   }
 
-  getState() {
+  getState(dir) {
     let head_x = this.snake.head.position._x;
     let head_y = this.snake.head.position._y;
     let tail_x = this.snake.tail.position._x;
     let tail_y = this.snake.tail.position._y;
     let apple_x = this.apple.position._x;
     let apple_y = this.apple.position._y;
-    let direction = this.snake.direction;
+    let direction = dir || this.snake.direction;
     let state = {
       ws: false,
       wl: false,
@@ -110,12 +118,19 @@ class Manager {
     return state;
   }
 
-  getEncodedState() {
-    let state = this.getState();
+  getEncodedStr(st) {
+    let keys = [ "ws","wl","wr","qfu","qfl","qtu","qtl"];
+    let state = st || this.getState();
     let str = '';
-    for (let key in state) {
+    keys.forEach((key) => {
+      // console.log(key);
       str = str + (state[key] ? '1' : '0');
-    }
+    });
+    return str;
+  }
+
+  getEncodedState(st) {
+    let str = this.getEncodedStr(st);
     return parseInt(str, 2);
   }
 
@@ -140,6 +155,18 @@ class Manager {
     return poss;
   }
 
+  reset() {
+    this.snake.time = 0
+    this.snake.direction = 'down'
+    this.snake.body = []
+    this.snake.children = []
+    this.snake.head = this.snake._createSquare(this.snake._headTexture)
+    this.snake.head.position.set(worldSize.w / 2, worldSize.h / 2)
+    this.snake.addChild(this.snake.head)
+    this.snake.abstractMap = new AbstractMap()
+    this.snake.abstractMap.setPosition(this.snake.head.position)
+  }
+
   update(delta, a) {
     let reward = 0;
     try {
@@ -152,15 +179,7 @@ class Manager {
       }
     }
     if (reward == eatSelfReward || reward == getOutReward) { // restart the game
-      this.snake.time = 0
-      this.snake.direction = 'down'
-      this.snake.body = []
-      this.snake.children = []
-      this.snake.head = this.snake._createSquare(this.snake._headTexture)
-      this.snake.head.position.set(worldSize.w / 2, worldSize.h / 2)
-      this.snake.addChild(this.snake.head)
-      this.snake.abstractMap = new AbstractMap()
-      this.snake.abstractMap.setPosition(this.snake.head.position)
+      this.reset()
     } else if (this.snake.eatApple(this.apple.position)) {
       this.highest = Math.max(this.highest, this.snake.body.length)
       console.log("apple eaten!");
