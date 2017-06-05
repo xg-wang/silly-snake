@@ -1,3 +1,8 @@
+import _ from 'lodash'
+import {
+  getRandomInt, DIRECTIONS
+} from '../snake/utils'
+
 class QLearner {
   constructor(snake, apple) {
     this.snake = snake
@@ -14,25 +19,14 @@ class QLearner {
   iterate() {
     this.iterations = this.iterations + 1
 
-    let newQvalue = 0.0
+    const currDir = this.snake.direction
+    let dirs = DIRECTIONS.slice()
+    _.pull(dirs, currDir)
+
     if (getRandomInt(0, 100) > this.explorationRate) {
-      newQvalue = this.maxQValue()
-    }
-    else {
-      num = getRandomInt(0, 4)
-      // point: pos
-      if (num == 0) {
-        // pos = upPos
-      }
-      else if (num == 1) {
-        // pos = downPos
-      }
-      else if (num == 2) {
-        // pos = leftPos
-      }
-      else {
-        // pos = rightPos
-      }
+      return this.directionFromMaxQValue(dirs)
+    } else {
+      return _.sample(dirs)
     }
   }
 
@@ -78,31 +72,19 @@ class QLearner {
     // return -rwd
   }
 
-  getQValue(pos) {
+  getQValue(dir) {
+    const headPos = this.snake.head.position.clone()
+    this.snake.toNextDirection(headPos, dir)
     return Math.sqrt(
-      Math.pow((pos.position.x - this.apple.position.x), 2) +
-      Math.pow((pos.position.y - this.apple.position.y), 2)
+      Math.pow((headPos.x - this.apple.position.x), 2) +
+      Math.pow((headPos.y - this.apple.position.y), 2)
     )
   }
 
-  maxQValue() {
-    let newQvalue = 0.0
-
-    //new four points: upPos, downPos, leftPos, rightPos
-    // checkEncounterBody
-
-    //upQvalue = getQValue(upPos)
-
-    //downQvalue = getQValue(downPos)
-
-    //leftQvalue = getQValue(leftPos)
-
-    //rightQvalue = getQValue(rightPos)
-
-    // newQvalue = max(upQvalue, downQvalue, leftQvalue, rightQvalue)
-    return newQvalue
+  directionFromMaxQValue(dirs) {
+    const qValues = dirs.map(d => getQValue(d))
+    return DIRECTIONS[qValues.indexOf(_.max(qValues))]
   }
-
 
 }
 

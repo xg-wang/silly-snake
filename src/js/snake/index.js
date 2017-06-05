@@ -97,7 +97,7 @@ class Snake extends PIXI.Container {
   move(dir) {
     const p = this.head.position
     let prev = new PIXI.Point(p.x, p.y);
-    this._toNextDirection(this.head, dir)
+    this.toNextDirection(this.head, dir)
     // check out of boundary
     if (this._checkBoundary(this.head.position)) {
       return 'out' // game end if out of boundary
@@ -152,37 +152,21 @@ class Snake extends PIXI.Container {
   selectNextDirection(dir, applePos) {
     // TODO: combine learning
     let dirs = ['up', 'down', 'left', 'right']
-    switch (dir) {
-      case 'up':
-        dirs.splice(0, 1)
-        break
-      case 'down':
-        dirs.splice(1, 1)
-        break
-      case 'left':
-        dirs.splice(2, 1)
-        break
-      case 'right':
-        dirs.splice(3, 1)
-        break
-      default:
-        console.error('dir input not supported!', dir)
-        break
-    }
+    _.pull(dirs, dir)
     let safeDirs = dirs.filter(d => {
       let hit = false
       // attemp
-      this._toNextDirection(this.head, d)
+      this.toNextDirection(this.head, d)
       if (this.abstractMap.checkPos(this.head.position)) {
         hit = true
       }
       // recover
-      this._toNextDirection(this.head, opposite(d))
+      this.toNextDirection(this.head, opposite(d))
       return !hit
     })
     return _.sample(safeDirs)
   }
-  _toNextDirection(head, dir) {
+  toNextDirection(head, dir) {
     switch (dir) {
       case 'up':
         head.position.y -= gridSize.h
@@ -210,7 +194,7 @@ class Snake extends PIXI.Container {
    * @returns {'out'|'eat_self'|'eat'|'continue'}
    */
   update(delta, dir, applePos) {
-    this.direction = this.selectNextDirection(this.direction, applePos)
+    this.direction = dir // this.selectNextDirection(this.direction, applePos)
     const pos = new PIXI.Point(this.tail.position.x, this.tail.position.y)
     const moveResult = this.move(this.direction)
     if (moveResult !== 'continue') {
