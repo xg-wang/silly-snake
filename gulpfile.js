@@ -7,6 +7,7 @@ var exorcist    = require('exorcist')
 var browserify  = require('browserify')
 var browserSync = require('browser-sync').create()
 var assign      = require('lodash.assign')
+var ghPages     = require('gulp-gh-pages')
 
 var base = {
   src: 'src',
@@ -79,4 +80,27 @@ gulp.task('default', ['js', 'html', 'css', 'assets'], function () {
   gulp.watch(`${base.src}/css`, ['css'])
   gulp.watch(`${base.src}/*.html`, ['html'])
   gulp.watch(`${base.src}/assets`, ['assets'])
+})
+
+gulp.task('build', ['html', 'css', 'assets'], function() {
+  gutil.log('Compiling JS...')
+  var b = browserify(opts)
+    .transform(babelify.configure({
+      presets: ["es2015"],
+      sourceMapRelative: base.src + '/js'
+    }))
+    .bundle()
+    .on('error', function (err) {
+      gutil.log(err.message)
+      this.emit('end')
+    })
+    .pipe(exorcist(base.dist + '/bundle.js.map'))
+    .pipe(source('bundle.js'))
+    .pipe(gulp.dest(base.dist))
+    .pipe(browserSync.stream({once: true}))
+})
+
+gulp.task('deploy', ['build'], function() {
+  return gulp.src('./dist/**/*')
+    .pipe(ghPages());
 })

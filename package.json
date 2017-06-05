@@ -6,7 +6,6 @@
   "author": "Xingan Wang <wangxgwxg@gmail.com>",
   "license": "MIT",
   "dependencies": {
-    "gulp-install": "^1.1.0",
     "lodash": "^4.17.4",
     "pixi.js": "^4.5.1"
   },
@@ -16,6 +15,7 @@
     "browser-sync": "^2.18.8",
     "exorcist": "^0.4.0",
     "gulp": "^3.9.1",
+    "gulp-gh-pages": "^0.5.4",
     "gulp-sourcemaps": "^2.6.0",
     "lodash.assign": "^4.2.0",
     "vinyl-buffer": "^1.0.0",
