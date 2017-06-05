@@ -1,8 +1,8 @@
 import { CONFIG } from './config'
-import { Snake } from './index'
+import { Snake, AbstractMap } from './index'
 
 const {
-  worldSize, gridSize, eatSelfReward, eatAppleReward, moveReward
+  worldSize, gridSize, eatSelfReward, eatAppleReward, moveReward, getOutReward
 } = CONFIG
 
 class Manager {
@@ -12,6 +12,7 @@ class Manager {
     this.apple = apple
     this.apple.moveTo(this.nextApplePosition())
     this.app.stage.addChild(snake, apple.sprite)
+    this.highest = 0;
   }
 
   /**
@@ -78,28 +79,33 @@ class Manager {
     // check if there's a wall straight/left/right to the head, be that snake's children or the boundary
     switch (direction) {
       case 'up':
-        state.ws = head_y <= 0 ? true : this.snake.abstractMap.checkPos({x: head_x, y: head_y - gridSize.h})
-        state.wl = head_x <= 0 ? true : this.snake.abstractMap.checkPos({x: head_x - gridSize.w, y: head_y})
-        state.wr = head_x >= worldSize.w ? true : this.snake.abstractMap.checkPos({x: head_x + gridSize.w, y: head_y})
+        state.ws = head_y - gridSize.h < 0 ? true : this.snake.abstractMap.checkPos({x: head_x, y: head_y - gridSize.h})
+        state.wl = head_x - gridSize.w < 0 ? true : this.snake.abstractMap.checkPos({x: head_x - gridSize.w, y: head_y})
+        state.wr = head_x + gridSize.w >= worldSize.w ? true : this.snake.abstractMap.checkPos({x: head_x + gridSize.w, y: head_y})
         break
       case 'down':
-        state.ws = head_y >= worldSize.h ? true : this.snake.abstractMap.checkPos({x: head_x, y: head_y + gridSize.h})
-        state.wr = head_x <= 0 ? true : this.snake.abstractMap.checkPos({x: head_x - gridSize.w, y: head_y})
-        state.wl = head_x >= worldSize.w ? true : this.snake.abstractMap.checkPos({x: head_x + gridSize.w, y: head_y})
+        state.ws = head_y + gridSize.h >= worldSize.h ? true : this.snake.abstractMap.checkPos({x: head_x, y: head_y + gridSize.h})
+        state.wr = head_x - gridSize.w < 0 ? true : this.snake.abstractMap.checkPos({x: head_x - gridSize.w, y: head_y})
+        state.wl = head_x + gridSize.w >= worldSize.w ? true : this.snake.abstractMap.checkPos({x: head_x + gridSize.w, y: head_y})
         break
       case 'left':
-        state.wl = head_y >= worldSize.h ? true : this.snake.abstractMap.checkPos({x: head_x, y: head_y + gridSize.h})
-        state.ws = head_x <= 0 ? true : this.snake.abstractMap.checkPos({x: head_x - gridSize.w, y: head_y})
-        state.wr = head_y <= 0 ? true : this.snake.abstractMap.checkPos({x: head_x, y: head_y - gridSize.h})
+        state.wl = head_y + gridSize.h >= worldSize.h ? true : this.snake.abstractMap.checkPos({x: head_x, y: head_y + gridSize.h})
+        state.ws = head_x - gridSize.w < 0 ? true : this.snake.abstractMap.checkPos({x: head_x - gridSize.w, y: head_y})
+        state.wr = head_y - gridSize.h < 0 ? true : this.snake.abstractMap.checkPos({x: head_x, y: head_y - gridSize.h})
         break
       case 'right':
-        state.wl = head_y <= 0 ? true : this.snake.abstractMap.checkPos({x: head_x, y: head_y - gridSize.h})
-        state.wr = head_y >= worldSize.h ? true : this.snake.abstractMap.checkPos({x: head_x, y: head_y + gridSize.h})
-        state.ws = head_x >= worldSize.w ? true : this.snake.abstractMap.checkPos({x: head_x + gridSize.w, y: head_y})
+        state.wl = head_y - gridSize.h < 0 ? true : this.snake.abstractMap.checkPos({x: head_x, y: head_y - gridSize.h})
+        state.wr = head_y + gridSize.h >= worldSize.h ? true : this.snake.abstractMap.checkPos({x: head_x, y: head_y + gridSize.h})
+        state.ws = head_x + gridSize.w >= worldSize.w ? true : this.snake.abstractMap.checkPos({x: head_x + gridSize.w, y: head_y})
         break
       default:
         console.error('dir input not supported!', dir)
         break
+    }
+    for (let key in state) {
+      if (state[key] == undefined) {
+        throw "now what";
+      }
     }
     return state;
   }
@@ -122,26 +128,44 @@ class Manager {
   allowedActions(s) {
     let state = this.decodeState(s);
     let poss = [];
-    if (! state.ws) {
+    if (state.ws == false) {
       poss.push(0);
     }
-    if (! state.wl) {
+    if (state.wl == false) {
       poss.push(1);
     }
-    if (! state.wr) {
+    if (state.wr == false) {
       poss.push(2);
     }
     return poss;
   }
 
   update(delta, a) {
-    let reward = this.snake.update(delta, this.apple.position, a)
-    if (reward != eatSelfReward && this.snake.eatApple(this.apple.position)) {
+    let reward = 0;
+    try {
+      reward = this.snake.update(delta, this.apple.position, a)
+    } catch(err) {
+      if (err == "fuck") {
+        reward = getOutReward;
+      } else {
+        throw err;
+      }
+    }
+    if (reward == eatSelfReward || reward == getOutReward) { // restart the game
+      this.snake.time = 0
+      this.snake.direction = 'down'
+      this.snake.body = []
+      this.snake.children = []
+      this.snake.head = this.snake._createSquare(this.snake._headTexture)
+      this.snake.head.position.set(worldSize.w / 2, worldSize.h / 2)
+      this.snake.addChild(this.snake.head)
+      this.snake.abstractMap = new AbstractMap()
+      this.snake.abstractMap.setPosition(this.snake.head.position)
+    } else if (this.snake.eatApple(this.apple.position)) {
+      this.highest = Math.max(this.highest, this.snake.body.length)
+      console.log("apple eaten!");
       const newPos = this.nextApplePosition()
       this.apple.moveTo(newPos)
-    }
-    if (reward == eatSelfReward) { // restart the game
-      this.snake = new Snake(this.snake.renderer)
     }
     return reward;
   }

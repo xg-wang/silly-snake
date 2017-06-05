@@ -29,8 +29,8 @@ function setup() {
 
   var spec = {}
   spec.update = 'qlearn'; // 'qlearn' or 'sarsa'
-  spec.gamma = 0.9; // discount factor, [0, 1)
-  spec.epsilon = 0.2; // initial epsilon for epsilon-greedy policy, [0, 1)
+  spec.gamma = 0.8; // discount factor, [0, 1)
+  spec.epsilon = 0.1; // initial epsilon for epsilon-greedy policy, [0, 1)
   spec.alpha = 0.1; // value function learning rate
   spec.lambda = 0; // eligibility trace decay, [0,1). 0 = no eligibility traces
   spec.replacing_traces = true; // use replacing or accumulating traces
@@ -42,11 +42,13 @@ function setup() {
 
   app.ticker.add((delta) => {
     var a = agent.act(manager.getEncodedState());
+    console.log(`x: ${snake.head.position._x}, y: ${snake.head.position._y}`);
     console.log('action:', a);
     var reward = manager.update(delta, a);
-    console.log('reward: ', reward);
-    console.log(manager.getEncodedState());
-    manager.update(delta);
-    agent.learn(reward);
+    // console.log(manager.getEncodedState());
+    if (reward != undefined) {
+      console.log('reward: ', reward);
+      agent.learn(reward);
+    }
   })
 }

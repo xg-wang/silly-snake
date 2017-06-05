@@ -6,7 +6,7 @@ import {
 import { Apple } from './apple'
 
 const {
-  worldSize, gridSize, snakeColor, headColor, backgroundColor, eatSelfReward, eatAppleReward, moveReward
+  worldSize, gridSize, snakeColor, headColor, backgroundColor, eatSelfReward, eatAppleReward, moveReward, moveCloserReward, moveFurtherReward
 } = CONFIG
 
 class AbstractMap {
@@ -23,9 +23,23 @@ class AbstractMap {
   }
   snakeMove(headPos, tailPos) {
     this.setPosition(headPos, true)
-    this.setPosition(tailPos, false)
+    if (headPos.x != tailPos.x || headPos.y != tailPos.y) {
+      this.setPosition(tailPos, false)
+    }
   }
+  ifOut(pos) {
+    if (pos.y < 0 || pos.y >= worldSize.h || pos.x < 0 || pos.x >= worldSize.w) {
+      // throw "SHIT"
+      return true;
+    }
+    return false;
+  }
+
   checkPos(pos) {
+    if (pos.y < 0 || pos.y >= worldSize.h || pos.x < 0 || pos.x >= worldSize.w) {
+      // throw "SHIT"
+      return true;
+    }
     const row = Math.floor(pos.y / gridSize.h)
     const col = Math.floor(pos.x / gridSize.w)
     return this.map[this.cols * row + col]
@@ -78,17 +92,26 @@ class Snake extends PIXI.Container {
   move(dir) {
     const p = this.head.position
     let prev = new PIXI.Point(p.x, p.y)
+    prev._x = prev.x;
+    prev._y = prev.y;
     this._toNextDirection(this.head, dir)
     if (this.abstractMap.checkPos(this.head.position)) {
-      return eatSelfReward // -10000 reward if eat itself
+      let pos = this.head.position;
+      if (pos._y >= 0 && pos._y < worldSize.h && pos._x >= 0 && pos._x < worldSize.w) {
+        return true; // bite itself
+      }
     }
-    this.abstractMap.snakeMove(this.head.position, this.tail.position)
+    if (this.body.length > 0) {
+      this.abstractMap.snakeMove(this.head.position, this.tail.position)
+    } else {
+      this.abstractMap.snakeMove(this.head.position, prev)
+    }
     for (let s of this.body) {
       const curr = { x: s.x, y: s.y }
       s.position.copy(prev);
       prev = curr;
     }
-    return moveReward // 0 reward for just moving around
+    return false
   }
 
   get size() {
@@ -117,7 +140,7 @@ class Snake extends PIXI.Container {
    */
   selectNextDirection(dir, applePos, a) {
     // TODO: combine learning
-    if (a) {
+    if (a != undefined) {
       switch(this.direction) {
         case 'up':
           if (a == 0) return 'up'
@@ -177,40 +200,66 @@ class Snake extends PIXI.Container {
     return _.sample(safeDirs)
   }
   _toNextDirection(head, dir) {
+    let nextPos = {x: head.position.x, y: head.position.y};
     switch (dir) {
       case 'up':
-        head.position.y -= gridSize.h
+        nextPos.y -= gridSize.h
         break
       case 'down':
-        head.position.y += gridSize.h
+        nextPos.y += gridSize.h
         break
       case 'left':
-        head.position.x -= gridSize.w
+        nextPos.x -= gridSize.w
         break
       case 'right':
-        head.position.x += gridSize.w
+        nextPos.x += gridSize.w
         break
       default:
         console.error('dir input not supported!', dir)
         break
     }
+    if (this.abstractMap.ifOut(nextPos)) {
+      throw "fuck";
+    } else {
+      head.position.copy(nextPos);
+    }
   }
 
   update(delta, applePos, a) {
-    if ((this.time += delta )> 20) {
+    if ((this.time += delta ) > 0) {
       this.time = 0
     }
     if (this.time === 0) {
+      let prevDistance = (applePos.x - this.head.position.x)**2 + (applePos.y - this.head.position.y)**2;
+      let prevDirection = this.direction;
       this.direction = this.selectNextDirection(this.direction, applePos, a)
+      if (this.direction == undefined) {
+        throw "what!";
+      }
       const pos = new PIXI.Point(this.tail.position.x, this.tail.position.y)
-      let reward = this.move(this.direction)
-      // TODO: grow when eat
-      if (reward == moveReward && this.eatApple(applePos)) {
-        this.grow(pos);
-        return eatAppleReward; // huge reward
+      let ifEatSelf = this.move(this.direction)
+      let currDistance = (applePos.x - this.head.position.x)**2 + (applePos.y - this.head.position.y)**2;
+      let reward = moveReward;
+      if (ifEatSelf) {
+        reward = eatSelfReward // -10000 reward if eat itself
+      }
+
+      if (this.eatApple(applePos)) {
+        reward = eatAppleReward
+        this.grow(pos)
+      } else if (currDistance < prevDistance) {
+        console.log('moved closer!');
+        reward = moveCloserReward
+      } else if (currDistance > prevDistance) {
+        console.log('moved further!');
+        reward = moveFurtherReward
       }
       return reward;
     }
+    if (this.head.position._x >= CONFIG.worldSize.w || this.head.position._x <= 0 || this.head.position._y >= CONFIG.worldSize.h || this.head.position._y <= 0) {
+      throw "yo"
+    }
+    return undefined;
   }
 
   /**
@@ -229,10 +278,11 @@ class Snake extends PIXI.Container {
         randomIdx--
       }
     }
+    return this.abstractMap.pointFromIdx(randomIdx);
   }
   eatApple(applePos) {
     return this.abstractMap.checkPos(applePos)
   }
 }
 
-export { Snake, Apple, CONFIG }
+export { AbstractMap, Snake, Apple, CONFIG }
