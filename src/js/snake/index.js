@@ -201,7 +201,7 @@ class Snake extends PIXI.Container {
       return moveResult
     }
     // TODO: grow only when eat
-    if (this.eatApple(applePos) || this.children.length < 10) {
+    if (this.eatApple(applePos)) {
       this.grow(pos)
       return 'eat'
     }
