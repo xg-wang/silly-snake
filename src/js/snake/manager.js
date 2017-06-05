@@ -7,6 +7,7 @@ const {
 
 class Manager {
   constructor(app, snake, apple) {
+    this.time = 0
     this.app = app
     this.snake = snake
     this.apple = apple
@@ -16,20 +17,25 @@ class Manager {
   }
 
   update(delta) {
-    const dir = this.learner.iterate()
-    const state = this.snake.update(delta, dir, this.apple.position)
-    switch (state) {
-      case 'out':
-      case 'eat_self':
-        this.snake.reset()
-      case 'eat':
-        const newPos = this.nextApplePosition()
-        this.apple.moveTo(newPos)
-        break
-      default:
-        break
+    if ((this.time += delta) > 20) {
+      this.time = 0
     }
-    this.learner.updateQ(state)
+    if (this.time === 0) {
+      const dir = this.learner.iterate()
+      const state = this.snake.update(delta, dir, this.apple.position)
+      switch (state) {
+        case 'out':
+        case 'eat_self':
+          this.snake.reset()
+        case 'eat':
+          const newPos = this.nextApplePosition()
+          this.apple.moveTo(newPos)
+          break
+        default:
+          break
+      }
+      this.learner.updateQ(state)
+    }
   }
 
   nextApplePosition() {

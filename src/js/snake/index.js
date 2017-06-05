@@ -59,7 +59,6 @@ class Snake extends PIXI.Container {
   constructor(renderer) {
     super()
     // setup
-    this.time = 0
     this.direction = 'down'
     this._bodyTexture = this._generateTex(renderer, snakeColor)
     this._headTexture = this._generateTex(renderer, headColor)
@@ -211,21 +210,16 @@ class Snake extends PIXI.Container {
    * @returns {'out'|'eat_self'|'eat'|'continue'}
    */
   update(delta, dir, applePos) {
-    if ((this.time += delta )> 20) {
-      this.time = 0
+    this.direction = this.selectNextDirection(this.direction, applePos)
+    const pos = new PIXI.Point(this.tail.position.x, this.tail.position.y)
+    const moveResult = this.move(this.direction)
+    if (moveResult !== 'continue') {
+      return moveResult
     }
-    if (this.time === 0) {
-      this.direction = this.selectNextDirection(this.direction, applePos)
-      const pos = new PIXI.Point(this.tail.position.x, this.tail.position.y)
-      const moveResult = this.move(this.direction)
-      if (moveResult !== 'continue') {
-        return moveResult
-      }
-      // TODO: grow only when eat
-      if (this.eatApple(applePos) || this.children.length < 10) {
-        this.grow(pos)
-        return 'eat'
-      }
+    // TODO: grow only when eat
+    if (this.eatApple(applePos) || this.children.length < 10) {
+      this.grow(pos)
+      return 'eat'
     }
     return 'continue'
   }

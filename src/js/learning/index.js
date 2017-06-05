@@ -11,7 +11,7 @@ class QLearner {
     this.gamma = 0.9
   }
 
-  iterate(state) {
+  iterate() {
     this.iterations = this.iterations + 1
 
     let newQvalue = 0.0
