@@ -11,7 +11,8 @@ class QLearner {
     this.score = 0
     this.restartCount = 0
     this.iterations = 0
-    this.oldQvalue = 0.0
+    this.oldQValue = 0
+    this.currQValue = 0
     this.learnRate = 0.001
     this.gamma = 0.9
   }
@@ -26,14 +27,15 @@ class QLearner {
     if (getRandomInt(0, 100) > this.explorationRate) {
       return this.directionFromMaxQValue(dirs)
     } else {
-      return _.sample(dirs)
+      const randDir = _.sample(dirs)
+      this.currQValue = this.getQValue(randDir)
+      return randDir
     }
   }
 
   updateQ(state) {
-    // let newQvalue = this.getQValue(pos)
     // let rwd = this.reward()
-    // this.oldQvalue += this.learnRate * (rwd + this.gamma * newQvalue - this.oldQvalue)
+    // this.oldQvalue += this.learnRate * (rwd + this.gamma * this.currQValue - this.oldQValue)
   }
 
   reward() {
@@ -83,7 +85,8 @@ class QLearner {
 
   directionFromMaxQValue(dirs) {
     const qValues = dirs.map(d => getQValue(d))
-    return DIRECTIONS[qValues.indexOf(_.max(qValues))]
+    this.currQValue = _.max(qValues)
+    return DIRECTIONS[qValues.indexOf(this.currQValue)]
   }
 
 }
