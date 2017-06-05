@@ -23,6 +23,7 @@ class Manager {
     if (this.time === 0) {
       const dir = this.learner.iterate()
       const state = this.snake.update(delta, dir, this.apple.position)
+      console.log(`dir: ${dir}, state: ${state}`)
       switch (state) {
         case 'out':
         case 'eat_self':

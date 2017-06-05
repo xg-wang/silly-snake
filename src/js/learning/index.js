@@ -1,6 +1,6 @@
 import _ from 'lodash'
 import {
-  getRandomInt, DIRECTIONS
+  opposite, DIRECTIONS
 } from '../snake/utils'
 
 class QLearner {
@@ -22,7 +22,7 @@ class QLearner {
 
     const currDir = this.snake.direction
     let dirs = DIRECTIONS.slice()
-    _.pull(dirs, currDir)
+    _.pull(dirs, opposite(currDir))
 
     if (Math.random() > this.explorationRate) {
       return this.directionFromMaxQValue(dirs)
