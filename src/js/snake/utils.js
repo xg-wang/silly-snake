@@ -1,4 +1,4 @@
-const opposite = (dir) => {
+export const opposite = (dir) => {
   switch (dir) {
     case 'up':
       return 'down'
@@ -14,7 +14,7 @@ const opposite = (dir) => {
   }
 }
 
-const hitTestRectangle = (r1, r2) => {
+export const hitTestRectangle = (r1, r2) => {
   //Define the variables we'll need to calculate
   let hit, combinedHalfWidths, combinedHalfHeights, vx, vy;
 
@@ -59,4 +59,8 @@ const hitTestRectangle = (r1, r2) => {
   return hit;
 };
 
-export { opposite, hitTestRectangle }
+export const getRandomInt = (min, max) => {
+  min = Math.ceil(min);
+  max = Math.floor(max);
+  return Math.floor(Math.random() * (max - min)) + min;
+}
