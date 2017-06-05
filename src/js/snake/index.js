@@ -102,7 +102,8 @@ class Snake extends PIXI.Container {
     if (this._checkBoundary(this.head.position)) {
       return 'out' // game end if out of boundary
     }
-    if (!this.abstractMap.snakeMove(this.head.position, this.tail.position)) {
+    const tailPos = this.body.length === 0 ? prev : this.tail.position
+    if (!this.abstractMap.snakeMove(this.head.position, tailPos)) {
       return 'eat_self' // game end if eat self
     }
     for (let s of this.body) {

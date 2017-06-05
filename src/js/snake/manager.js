@@ -17,7 +17,7 @@ class Manager {
   }
 
   update(delta) {
-    if ((this.time += delta) > 20) {
+    if ((this.time += delta) > 5) {
       this.time = 0
     }
     if (this.time === 0) {
