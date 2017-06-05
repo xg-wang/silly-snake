@@ -7,7 +7,7 @@ class QLearner {
   constructor(snake, apple) {
     this.snake = snake
     this.apple = apple
-    this.explorationRate = 1
+    this.explorationRate = 0.4
     this.score = 0
     this.restartCount = 0
     this.iterations = 0
@@ -24,7 +24,7 @@ class QLearner {
     let dirs = DIRECTIONS.slice()
     _.pull(dirs, currDir)
 
-    if (getRandomInt(0, 100) > this.explorationRate) {
+    if (Math.random() > this.explorationRate) {
       return this.directionFromMaxQValue(dirs)
     } else {
       const randDir = _.sample(dirs)
@@ -63,7 +63,7 @@ class QLearner {
     }
 
     if (this.restartCount > 50) {
-      this.explorationRate = 20
+      this.explorationRate = 0.2
     }
 
     let rwd = Math.sqrt((this.snake.head.position.x - this.apple.position.x) * (this.snake.head.position.x -
@@ -86,7 +86,7 @@ class QLearner {
   directionFromMaxQValue(dirs) {
     const qValues = dirs.map(d => this.getQValue(d))
     this.currQValue = _.max(qValues)
-    return DIRECTIONS[qValues.indexOf(this.currQValue)]
+    return dirs[qValues.indexOf(this.currQValue)]
   }
 
 }
