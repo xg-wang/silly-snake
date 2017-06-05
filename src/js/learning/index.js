@@ -34,11 +34,12 @@ class QLearner {
   }
 
   updateQ(state) {
-    let rwd = this.reward()
+    let rwd = this.reward(state)
     this.oldQValue += this.learnRate * (rwd + this.gamma * this.currQValue - this.oldQValue)
   }
 
-  reward() {
+  reward(state) {
+    // TODO: fix this!
     if (this.snake.head.position.x== this.apple.position.x && this.snake.head.position.y == this.apple.position.y) {
       // apple become a part of body, need to rewrite grow()
       // this.snake.grow(this.snake.head)
