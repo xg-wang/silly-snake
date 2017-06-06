@@ -25,9 +25,7 @@ class RlEnv {
    * wl: whether there is a wall to the left of the head
    * wr: whether there is a wall to the right of the head
    * qfu: whether food position is upper
-   * qfd: whether food position is down
    * qfl: whether food position is left
-   * qfr: whether food position is right
    * qtu: whether tail position is upper
    * qtl: whether tail position is left
    * In terms of actions, we have:
@@ -185,8 +183,8 @@ class QLearner {
     this.apple = apple
     const spec = {}
     spec.update = 'qlearn'; // 'qlearn' or 'sarsa'
-    spec.gamma = 0.6; // discount factor, [0, 1)
-    spec.epsilon = 0; // initial epsilon for epsilon-greedy policy, [0, 1)
+    spec.gamma = 0.9; // discount factor, [0, 1)
+    spec.epsilon = 0.1; // initial epsilon for epsilon-greedy policy, [0, 1)
     spec.alpha = 0.15; // value function learning rate
     spec.lambda = 0; // eligibility trace decay, [0,1). 0 = no eligibility traces
     spec.replacing_traces = true; // use replacing or accumulating traces

@@ -18,12 +18,19 @@ class Manager {
   }
 
   update(delta) {
-    if ((this.time += delta) > 2) {
+    if ((this.time += delta) > 0) {
       this.time = 0
     }
     if (this.time === 0) {
-      const newDir = this.learner.selectDirection()
-      let state = this.snake.update(delta, newDir, this.apple.position)
+      let state;
+      try {
+        const newDir = this.learner.selectDirection()
+        state = this.snake.update(delta, newDir, this.apple.position)
+      } catch(err) {
+        if (err.message == 'wtf') {
+            state = 'eat_self';
+        }
+      }
       // console.log(`dir: ${newDir}, state: ${state}`)
       switch (state) {
         case 'out':
