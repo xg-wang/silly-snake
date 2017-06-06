@@ -15,10 +15,11 @@ class Manager {
     this.app.stage.addChild(snake, apple.sprite)
     this.learner = new QLearner(snake, apple)
     this.prevDistance = this._getDistance()
+    this.inverseSpeed = 2
   }
 
   update(delta) {
-    if ((this.time += delta) > 2) {
+    if ((this.time += delta) > this.inverseSpeed) {
       this.time = 0
     }
     if (this.time === 0) {

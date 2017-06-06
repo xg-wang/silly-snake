@@ -12,7 +12,6 @@ const app = new PIXI.Application(
 const wrapper = document.querySelector('#wrapper')
 const speed = document.querySelector('#speed')
 wrapper.insertBefore(app.view, speed)
-// document.body.appendChild(app.view)
 
 PIXI.loader
   .add('assets/snakeset.png')
@@ -27,4 +26,10 @@ function setup() {
   app.ticker.add((delta) => {
     manager.update(delta)
   })
+
+  speed.addEventListener('input', function(event) {
+    manager.inverseSpeed = 60 / this.value
+    console.log(manager.inverseSpeed)
+  })
+
 }
