@@ -56532,7 +56532,7 @@ var worldSize = _snake.CONFIG.worldSize,
 var app = new PIXI.Application(worldSize.w, worldSize.h, { backgroundColor: backgroundColor });
 document.body.appendChild(app.view);
 
-PIXI.loader.add('../assets/snakeset.png').load(setup);
+PIXI.loader.add('./assets/snakeset.png').load(setup);
 
 function setup() {
   console.log('setup');
@@ -58486,7 +58486,7 @@ var Apple = function () {
   function Apple() {
     _classCallCheck(this, Apple);
 
-    var texture = PIXI.loader.resources['../assets/snakeset.png'].texture;
+    var texture = PIXI.loader.resources['./assets/snakeset.png'].texture;
     // texture.frame = new PIXI.Rectangle(256-64, 192-64, 64, 64);
     var w = 14;
     texture.frame = new PIXI.Rectangle(256 - 64 + w, 192 - 64 + w, 64 - w * 2, 64 - w * 2);
