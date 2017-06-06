@@ -9,7 +9,10 @@ const app = new PIXI.Application(
   worldSize.w, worldSize.h,
   {backgroundColor: backgroundColor}
 )
-document.body.appendChild(app.view)
+const wrapper = document.querySelector('#wrapper')
+const speed = document.querySelector('#speed')
+wrapper.insertBefore(app.view, speed)
+// document.body.appendChild(app.view)
 
 PIXI.loader
   .add('assets/snakeset.png')
