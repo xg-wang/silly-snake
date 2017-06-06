@@ -7,7 +7,7 @@ const {
 class Apple {
   constructor() {
     const texture = PIXI.loader.resources[
-      '../assets/snakeset.png'
+      'assets/snakeset.png'
     ].texture
     // texture.frame = new PIXI.Rectangle(256-64, 192-64, 64, 64);
     const w = 14
