@@ -186,10 +186,10 @@ class QLearner {
     spec.gamma = 0.5; // discount factor, [0, 1)
     spec.epsilon = 0.1; // initial epsilon for epsilon-greedy policy, [0, 1)
     spec.alpha = 0.15; // value function learning rate
-    spec.lambda = 0; // eligibility trace decay, [0,1). 0 = no eligibility traces
-    spec.replacing_traces = true; // use replacing or accumulating traces
+    spec.lambda = 0.1; // eligibility trace decay, [0,1). 0 = no eligibility traces
+    spec.replacing_traces = false; // use replacing or accumulating traces
     spec.planN = 50; // number of planning steps per iteration. 0 = no planning
-    spec.smooth_policy_update = true; // non-standard, updates policy smoothly to follow max_a Q
+    spec.smooth_policy_update = false; // non-standard, updates policy smoothly to follow max_a Q
     spec.beta = 0.1; // learning rate for smooth policy update
     this.spec = spec
     this.rlEnv = new RlEnv(snake, apple)
