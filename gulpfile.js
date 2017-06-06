@@ -77,9 +77,9 @@ gulp.task('default', ['js', 'html', 'css', 'assets'], function () {
   browserSync.init({
     server: base.dist
   })
-  gulp.watch(`${base.src}/css`, ['css'])
+  gulp.watch(`${base.src}/css/*`, ['css'])
   gulp.watch(`${base.src}/*.html`, ['html'])
-  gulp.watch(`${base.src}/assets`, ['assets'])
+  gulp.watch(`${base.src}/assets/*`, ['assets'])
 })
 
 gulp.task('build', ['html', 'css', 'assets'], function() {

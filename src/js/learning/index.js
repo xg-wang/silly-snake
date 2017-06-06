@@ -183,7 +183,7 @@ class QLearner {
     this.apple = apple
     const spec = {}
     spec.update = 'qlearn'; // 'qlearn' or 'sarsa'
-    spec.gamma = 0.9; // discount factor, [0, 1)
+    spec.gamma = 0.5; // discount factor, [0, 1)
     spec.epsilon = 0.1; // initial epsilon for epsilon-greedy policy, [0, 1)
     spec.alpha = 0.15; // value function learning rate
     spec.lambda = 0; // eligibility trace decay, [0,1). 0 = no eligibility traces
