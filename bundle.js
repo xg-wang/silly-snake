@@ -56530,7 +56530,9 @@ var worldSize = _snake.CONFIG.worldSize,
 
 
 var app = new PIXI.Application(worldSize.w, worldSize.h, { backgroundColor: backgroundColor });
-document.body.appendChild(app.view);
+var wrapper = document.querySelector('#wrapper');
+var speed = document.querySelector('#speed');
+wrapper.insertBefore(app.view, speed);
 
 PIXI.loader.add('assets/snakeset.png').load(setup);
 
@@ -56542,6 +56544,11 @@ function setup() {
 
   app.ticker.add(function (delta) {
     manager.update(delta);
+  });
+
+  speed.addEventListener('input', function (event) {
+    manager.inverseSpeed = 60 / this.value;
+    console.log(manager.inverseSpeed);
   });
 }
 
@@ -58871,12 +58878,13 @@ var Manager = function () {
     this.app.stage.addChild(snake, apple.sprite);
     this.learner = new _learning.QLearner(snake, apple);
     this.prevDistance = this._getDistance();
+    this.inverseSpeed = 2;
   }
 
   _createClass(Manager, [{
     key: 'update',
     value: function update(delta) {
-      if ((this.time += delta) > 2) {
+      if ((this.time += delta) > this.inverseSpeed) {
         this.time = 0;
       }
       if (this.time === 0) {
