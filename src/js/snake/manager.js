@@ -8,6 +8,8 @@ const {
 class Manager {
   constructor(app, snake, apple) {
     this.time = 0
+    this.appleNum = 0
+    this.deathNum = 0
     this.app = app
     this.snake = snake
     this.apple = apple
@@ -31,9 +33,13 @@ class Manager {
         case 'eat_self':
           this.snake.reset()
           this.prevDistance = 0
+          this.deathNum += 1
+          console.log("snake died " + this.deathNum + " times.")
         case 'eat':
           const newPos = this.nextApplePosition()
           this.apple.moveTo(newPos)
+          this.appleNum += 1
+          console.log("snake ate " + this.appleNum + " apples.")
           break
         case 'continue':
           state = this._getDistance() > this.prevDistance ? 'move_further' : 'move_closer'
