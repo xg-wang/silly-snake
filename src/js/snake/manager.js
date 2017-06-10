@@ -18,9 +18,11 @@ class Manager {
     this.learner = new QLearner(snake, apple)
     this.prevDistance = this._getDistance()
     this.inverseSpeed = 2
+    this.step = 0
   }
 
   update(delta) {
+    this.step += 1
     if ((this.time += delta) > this.inverseSpeed) {
       this.time = 0
     }
@@ -41,12 +43,12 @@ class Manager {
           this.snake.reset()
           this.prevDistance = 0
           this.deathNum += 1
-          console.log("snake died " + this.deathNum + " times.")
+          console.log("snake died " + this.deathNum + " times at step " + this.step)
         case 'eat':
           const newPos = this.nextApplePosition()
           this.apple.moveTo(newPos)
           this.appleNum += 1
-          console.log("snake ate " + this.appleNum + " apples.")
+          console.log("snake ate " + this.appleNum + " apples at step " + this.step)
           break
         case 'continue':
           state = this._getDistance() > this.prevDistance ? 'move_further' : 'move_closer'
